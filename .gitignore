@@ -1,0 +1,13 @@
+#Folder
+__pycache__
+.vscode
+help
+i18n
+scripts
+test
+
+#Files
+Makefile
+compile.bat
+plugin_upload.py
+pylintrc
