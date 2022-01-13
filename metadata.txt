@@ -10,7 +10,7 @@ about=The results can be viewed on the map as geometry. The plug-in uses officia
 
 tracker=https://github.com/marcusmohr/qgs-gazetteer-bb/issues
 repository=https://github.com/marcusmohr/qgs-gazetteer-bb
-homepage=https://github.com/marcusmohr
+homepage=https://github.com/marcusmohr/qgs-gazetteer-bb
 
 hasProcessingProvider=no
 # changelog=
