@@ -138,7 +138,13 @@ class GazetteerBB:
     def onClosePlugin(self):
         """Cleanup necessary items here when plugin dockwidget is closed"""
 
-        self.dockwidget.closingPlugin.disconnect(self.onClosePlugin)
+        #self.dockwidget.closingPlugin.disconnect(self.onClosePlugin)
+        self.dockwidget.searchEdit.clear()
+        self.dockwidget.resultWidget.clear()
+        self.dockwidget.pageLabel.clear()
+        self.dockwidget.hitsLabel.clear()
+
+        self.clear_opt_filter(self.dockwidget.filterBoxLayout)
 
         self.pluginIsActive = False
 
@@ -167,9 +173,8 @@ class GazetteerBB:
             if self.dockwidget is None:
                 # Create the dockwidget (after translation) and keep reference
                 self.dockwidget = GazetteerBBDockWidget()
-
-            # connect to provide cleanup on closing of dockwidget
-            self.dockwidget.closingPlugin.connect(self.onClosePlugin)
+                self.connect_ui()
+                self.set_tooltips()
 
             self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dockwidget)
 
@@ -180,50 +185,58 @@ class GazetteerBB:
             self.dockwidget.nextButton.setVisible(False)
             self.dockwidget.confirmButton.setVisible(False)
 
-            # connect ui elements with functions
-            self.dockwidget.addressBox.clicked.connect \
-                (lambda: self.update_search(True))
-            self.dockwidget.backButton.clicked.connect \
-                (lambda: self.update_search(True, -1))
-            self.dockwidget.cadastreBox.clicked.connect \
-                (lambda: self.update_search(True))
-            self.dockwidget.confirmButton.clicked.connect \
-                (self.confirm_opt_filter)
-            self.dockwidget.complexBox.clicked.connect \
-                (lambda: self.update_search(True))
-            self.dockwidget.nextButton.clicked.connect \
-                (lambda: self.update_search(True, 1))
-            self.dockwidget.resetButton.clicked.connect \
-                (lambda: self.load_default_settings(False))
-            self.dockwidget.saveButton.clicked.connect \
-                (self.store_settings)
-            self.dockwidget.searchButton.clicked.connect \
-                (lambda: self.update_search(False))
-            self.dockwidget.resultWidget.itemSelectionChanged.connect \
-                (self.add_vlayer)
-            self.dockwidget.searchEdit.returnPressed.connect \
-                (self.dockwidget.searchButton.click)
-
-            # set helpful tooltips
-            self.dockwidget.addressBox.setToolTip \
-                ('Adressen den Ergebnissen hinzufügen oder entfernen')
-            self.dockwidget.cadastreBox.setToolTip \
-                ('Katasterdaten den Ergebnissen hinzufügen oder entfernen')
-            self.dockwidget.complexBox.setToolTip \
-                ('Statt einer Bounding Box wird die wahre Geometrie zur Karte \
-                    hinzugefügt (wenn verfügbar)')
-            self.dockwidget.layerBox.setToolTip \
-                ('Beim Klick auf ein Ergebnis wird die Geometrie in der \
-                    Karte angezeigt und als Layer dem Themenbaum hinzugefügt')
-            self.dockwidget.saveButton.setToolTip \
-                ('Speichert die Einstellungen im Nutzerprofil')
-            self.dockwidget.resetButton.setToolTip \
-                ('Stellt die Standardeinstellungen wieder her')
-
             self.timer = QTimer()
             self.timer.timeout.connect(self.hide_settings_label)
 
+            self.dockwidget.hintLabel.setVisible(True)
+
             self.dockwidget.show()
+
+
+    def connect_ui(self):
+        """Connect ui elements with functions."""
+
+        self.dockwidget.addressBox.clicked.connect \
+            (lambda: self.update_search(True))
+        self.dockwidget.backButton.clicked.connect \
+            (lambda: self.update_search(True, -1))
+        self.dockwidget.cadastreBox.clicked.connect \
+            (lambda: self.update_search(True))
+        self.dockwidget.confirmButton.clicked.connect \
+            (self.confirm_opt_filter)
+        self.dockwidget.complexBox.clicked.connect \
+            (lambda: self.update_search(True))
+        self.dockwidget.nextButton.clicked.connect \
+            (lambda: self.update_search(True, 1))
+        self.dockwidget.resetButton.clicked.connect \
+            (lambda: self.load_default_settings(False))
+        self.dockwidget.saveButton.clicked.connect \
+            (self.store_settings)
+        self.dockwidget.searchButton.clicked.connect \
+            (lambda: self.update_search(False))
+        self.dockwidget.resultWidget.itemSelectionChanged.connect \
+            (self.add_vlayer)
+        self.dockwidget.searchEdit.returnPressed.connect \
+            (self.dockwidget.searchButton.click)
+        self.dockwidget.closingPlugin.connect \
+            (self.onClosePlugin)
+
+
+    def set_tooltips(self):
+        self.dockwidget.addressBox.setToolTip \
+            ('Adressen den Ergebnissen hinzufügen oder entfernen')
+        self.dockwidget.cadastreBox.setToolTip \
+            ('Katasterdaten den Ergebnissen hinzufügen oder entfernen')
+        self.dockwidget.complexBox.setToolTip \
+            ('Statt einer Bounding Box wird die wahre Geometrie zur Karte \
+                hinzugefügt (wenn verfügbar)')
+        self.dockwidget.layerBox.setToolTip \
+            ('Beim Klick auf ein Ergebnis wird die Geometrie in der \
+                Karte angezeigt und als Layer dem Themenbaum hinzugefügt')
+        self.dockwidget.saveButton.setToolTip \
+            ('Speichert die Einstellungen im Nutzerprofil')
+        self.dockwidget.resetButton.setToolTip \
+            ('Stellt die Standardeinstellungen wieder her')
 
 
     def update_search(self, opt_filter, status=0):
