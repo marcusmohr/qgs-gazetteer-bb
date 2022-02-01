@@ -50,16 +50,20 @@ class GazetteerBB:
         self.plugin_dir = os.path.dirname(__file__)
 
         # initialize locale
-        locale = QSettings().value('locale/userLocale')[0:2]
-        locale_path = os.path.join(
-            self.plugin_dir,
-            'i18n',
-            'GazetteerBB_{}.qm'.format(locale))
+        self.locale = QSettings().value('locale/userLocale')[0:2]
 
-        if os.path.exists(locale_path):
-            self.translator = QTranslator()
-            self.translator.load(locale_path)
-            QCoreApplication.installTranslator(self.translator)
+        # Make sure english translation is loaded if lang is not german
+        if self.locale != 'de':
+            self.locale = 'en'
+            locale_path = os.path.join(
+                self.plugin_dir,
+                'i18n',
+                'gazetteer_bb_en.qm')
+
+            if os.path.exists(locale_path):
+                self.translator = QTranslator()
+                self.translator.load(locale_path)
+                QCoreApplication.installTranslator(self.translator)
 
         self.actions = []
         self.menu = self.tr(u'&Gazetteer Berlin/Brandenburg')
@@ -223,20 +227,32 @@ class GazetteerBB:
 
 
     def set_tooltips(self):
-        self.dockwidget.addressBox.setToolTip \
-            ('Adressen den Ergebnissen hinzufügen oder entfernen')
-        self.dockwidget.cadastreBox.setToolTip \
-            ('Katasterdaten den Ergebnissen hinzufügen oder entfernen')
-        self.dockwidget.complexBox.setToolTip \
-            ('Statt einer Bounding Box wird die wahre Geometrie zur Karte \
-                hinzugefügt (wenn verfügbar)')
-        self.dockwidget.layerBox.setToolTip \
-            ('Beim Klick auf ein Ergebnis wird die Geometrie in der \
-                Karte angezeigt und als Layer dem Themenbaum hinzugefügt')
-        self.dockwidget.saveButton.setToolTip \
-            ('Speichert die Einstellungen im Nutzerprofil')
-        self.dockwidget.resetButton.setToolTip \
-            ('Stellt die Standardeinstellungen wieder her')
+        if self.locale == 'de':
+            self.dockwidget.addressBox.setToolTip \
+                ('Adressen den Ergebnissen hinzufügen oder entfernen')
+            self.dockwidget.cadastreBox.setToolTip \
+                ('Katasterdaten den Ergebnissen hinzufügen oder entfernen')
+            self.dockwidget.complexBox.setToolTip \
+                ('Statt einer Bounding Box wird die wahre Geometrie zur Karte hinzugefügt (wenn verfügbar)')
+            self.dockwidget.layerBox.setToolTip \
+                ('Beim Klick auf ein Ergebnis wird die Geometrie in der Karte angezeigt und als Layer dem Themenbaum hinzugefügt')
+            self.dockwidget.saveButton.setToolTip \
+                ('Speichert die Einstellungen im Nutzerprofil')
+            self.dockwidget.resetButton.setToolTip \
+                ('Stellt die Standardeinstellungen wieder her')
+        else:
+            self.dockwidget.addressBox.setToolTip \
+                ('Add or remove addresses from the results')
+            self.dockwidget.cadastreBox.setToolTip \
+                ('Add or remove cadastral data from the results')
+            self.dockwidget.complexBox.setToolTip \
+                ('True geometry is added to the map instead of a bounding box (if available)')
+            self.dockwidget.layerBox.setToolTip \
+                ('When you click on a result, the geometry is displayed on the map and added to the layer tree')
+            self.dockwidget.saveButton.setToolTip \
+                ('Saves the settings in the user profile')
+            self.dockwidget.resetButton.setToolTip \
+                ('Restores the default settings')
 
 
     def update_search(self, opt_filter, status=0):
@@ -263,13 +279,14 @@ class GazetteerBB:
         start = 0
         limit = int(self.dockwidget.resultsBox.text())
 
-        complex = self.dockwidget.complexBox.isChecked()
+        complex_geom = self.dockwidget.complexBox.isChecked()
         category = self.get_category_filter()
 
         if self.current_page != 1:
             start = (self.current_page - 1) * limit
 
-        param = {'query': term, 'complex': complex, 'start': start, 'limit': limit, 'filter[category]': category}
+        param = {'query': term, 'complex': complex_geom, 'start': start, \
+            'limit': limit, 'filter[category]': category, 'lang': self.locale}
 
         if opt_filter:
             for key in self.filter_widgets:
@@ -467,8 +484,13 @@ class GazetteerBB:
         else:
             self.dockwidget.nextButton.setVisible(False)
 
-        self.dockwidget.pageLabel.setText('Seite ' + str(self.current_page))
-        self.dockwidget.hitsLabel.setText(str(start + 1) + ' - ' + str(start + limit) + ' von ' + str(hits))
+        if self.locale == 'de':
+            self.dockwidget.pageLabel.setText('Seite ' + str(self.current_page))
+        else:
+            self.dockwidget.pageLabel.setText('Page ' + str(self.current_page))
+
+        self.dockwidget.hitsLabel.setText(str(start + 1) + ' - ' + \
+            str(start + limit) + ' / ' + str(hits))
 
 
     def add_vlayer(self):
@@ -584,8 +606,12 @@ class GazetteerBB:
         border_color = self.dockwidget.borderColorButton.color()
         settings.setValue("gazetteerBB/border_color", border_color)
 
-        self.set_settings_label('Die Werte wurden erfolgreich gespeichert! Die neuen Einstellungen '
-            + 'werden bei der nächsten Suche berücksichtigt.')
+        if self.locale == 'de':
+            self.set_settings_label('Die Werte wurden erfolgreich gespeichert! '
+                + 'Die neuen Einstellungen werden bei der nächsten Suche berücksichtigt.')
+        else:
+            self.set_settings_label('The values ​​were saved successfully! The new settings '
+                + 'will take effect on next search.')
 
 
     def load_settings(self):
@@ -631,8 +657,12 @@ class GazetteerBB:
         self.dockwidget.borderColorButton.setColor(border_color)
 
         if start is False:
-            self.set_settings_label('Die Werte wurden zurückgesetzt! Die neuen '
-                + 'Einstellungen werden bei der nächsten Suche berücksichtigt.')
+            if self.locale == 'de':
+                self.set_settings_label('Die Werte wurden zurückgesetzt! Die neuen '
+                    + 'Einstellungen werden bei der nächsten Suche berücksichtigt.')
+            else:
+                self.set_settings_label('The values have been reset! The new '
+                    + 'settings will take effect on next search.')
 
 
     def set_settings_label(self, text):
