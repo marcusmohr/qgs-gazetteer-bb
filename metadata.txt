@@ -2,7 +2,7 @@
 name=Gazetteer Berlin/Brandenburg
 qgisMinimumVersion=3.16
 description=A plug-in to search for addresses in Berlin/Brandenburg and cadastral data of Brandenburg
-version=0.9.1
+version=0.9.2
 author=Marcus Mohr
 email=marcus.mohr@gmx.net
 
@@ -15,6 +15,7 @@ homepage=https://github.com/marcusmohr/qgs-gazetteer-bb
 hasProcessingProvider=no
 changelog=
     0.9.1 - Fixes bug with duplicate geometries on restart of plugin
+    0.9.2 - Add english translation
 
 tags=suche,search,adressen,addresses,kataster,cadastre,brandenburg,bb,berlin,be,gdi,orte,flurstücke,flur,gemarkung
 
