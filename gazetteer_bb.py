@@ -423,19 +423,18 @@ class GazetteerBB:
         for i in data['results']:
 
             item = QListWidgetItem()
-
             item_data = ItemData(i['id'])
             item_data.title = i['title']
             item_data.subtitle = None
             item_data.epsg = epsg
-
-            type_label = self.get_type_label(data, i['type'])
-            item_data.type = type_label
+            item_data.type = self.get_type_label(data, i['type'])
 
             if 'geometryComplex' in i:
                 item_data.geom = i['geometryComplex']
             else:
                 item_data.geom = i['geometry']
+
+            item_data.geom_type = item_data.geom.split('(')[0]
 
             if 'subtitle' in i['additionalData']:
                 item_data.subtitle = i['additionalData']['subtitle']
@@ -505,9 +504,9 @@ class GazetteerBB:
         if items:
             item_data = items[0].data(QtCore.Qt.UserRole)
             layer_name = item_data.title
-            layer = self.create_layer(item_data.geom, layer_name)
+            layer = self.create_layer(item_data.geom, item_data.geom_type, layer_name)
 
-            self.set_map_extent(layer)
+            self.set_map_extent(layer, item_data.geom_type)
 
             create_layer = self.dockwidget.layerBox.isChecked()
 
@@ -515,12 +514,11 @@ class GazetteerBB:
                 QgsProject.instance().addMapLayers([layer])
 
 
-    def create_layer(self, geom, name):
+    def create_layer(self, geom, geom_type, name):
         """Set UI elements for paging to improve handling
            of results.
         """
 
-        geom_type = geom.split('(')[0] 
         type_str = geom_type + '?crs=epsg:4326'
 
         layer = QgsVectorLayer(type_str, name, 'memory')
@@ -572,7 +570,7 @@ class GazetteerBB:
         return style
 
 
-    def set_map_extent(self, layer):
+    def set_map_extent(self, layer, geom_type):
         """Move map to selected result geometry."""
 
         canvas = self.iface.mapCanvas()
@@ -586,6 +584,10 @@ class GazetteerBB:
         qct = QgsCoordinateTransform(qcrs_source, qcrs_dest, QgsProject.instance())
 
         canvas.setExtent(qct.transform(layer.extent()))
+
+        if geom_type.lower() == 'point':
+            canvas.zoomScale(5000)
+
         canvas.refresh()
 
 

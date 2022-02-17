@@ -82,64 +82,74 @@
         <translation>Settings</translation>
     </message>
     <message>
-        <location filename="../gazetteer_bb_dockwidget_base.ui" line="471"/>
+        <location filename="../gazetteer_bb_dockwidget_base.ui" line="327"/>
         <source>URL</source>
         <translation>URL</translation>
     </message>
     <message>
-        <location filename="../gazetteer_bb_dockwidget_base.ui" line="423"/>
+        <location filename="../gazetteer_bb_dockwidget_base.ui" line="300"/>
         <source>https://search.geobasis-bb.de</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../gazetteer_bb_dockwidget_base.ui" line="327"/>
         <source>Rahmenfarbe:</source>
-        <translation>Border color:</translation>
+        <translation type="obsolete">Border color:</translation>
     </message>
     <message>
         <location filename="../gazetteer_bb_dockwidget_base.ui" line="320"/>
         <source>Füllfarbe:</source>
-        <translation>Fill color:</translation>
+        <translation type="obsolete">Fill color:</translation>
     </message>
     <message>
-        <location filename="../gazetteer_bb_dockwidget_base.ui" line="485"/>
+        <location filename="../gazetteer_bb_dockwidget_base.ui" line="358"/>
         <source>Geometrie</source>
         <translation>Geometry</translation>
     </message>
     <message>
-        <location filename="../gazetteer_bb_dockwidget_base.ui" line="437"/>
+        <location filename="../gazetteer_bb_dockwidget_base.ui" line="344"/>
         <source>Speichern</source>
         <translation>Save</translation>
     </message>
     <message>
-        <location filename="../gazetteer_bb_dockwidget_base.ui" line="300"/>
+        <location filename="../gazetteer_bb_dockwidget_base.ui" line="365"/>
         <source>Komplexe Geometrie</source>
         <translation>Complex geometry</translation>
     </message>
     <message>
-        <location filename="../gazetteer_bb_dockwidget_base.ui" line="341"/>
+        <location filename="../gazetteer_bb_dockwidget_base.ui" line="382"/>
         <source>Treffer pro Seite</source>
         <translation>Results per page</translation>
     </message>
     <message>
-        <location filename="../gazetteer_bb_dockwidget_base.ui" line="348"/>
+        <location filename="../gazetteer_bb_dockwidget_base.ui" line="402"/>
         <source>Reset</source>
         <translation>Reset</translation>
     </message>
     <message>
-        <location filename="../gazetteer_bb_dockwidget_base.ui" line="310"/>
+        <location filename="../gazetteer_bb_dockwidget_base.ui" line="334"/>
         <source>Geometrie anzeigen</source>
         <translation>Show geometry</translation>
     </message>
     <message>
-        <location filename="../gazetteer_bb_dockwidget_base.ui" line="492"/>
+        <location filename="../gazetteer_bb_dockwidget_base.ui" line="460"/>
         <source>Polygone</source>
         <translation>Polygons</translation>
     </message>
     <message>
-        <location filename="../gazetteer_bb_dockwidget_base.ui" line="499"/>
+        <location filename="../gazetteer_bb_dockwidget_base.ui" line="481"/>
         <source>Punkte</source>
         <translation>Points</translation>
+    </message>
+    <message>
+        <location filename="../gazetteer_bb_dockwidget_base.ui" line="521"/>
+        <source>Rahmenfarbe</source>
+        <translation>Border color</translation>
+    </message>
+    <message>
+        <location filename="../gazetteer_bb_dockwidget_base.ui" line="528"/>
+        <source>Füllfarbe</source>
+        <translation>Fill color</translation>
     </message>
 </context>
 </TS>
