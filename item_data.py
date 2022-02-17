@@ -33,6 +33,11 @@ class ItemData:
 
 
     @property
+    def geom_type(self):
+        return self._geom_type
+
+
+    @property
     def epsg(self):
         return self._geom
 
@@ -60,6 +65,11 @@ class ItemData:
     @geom.setter
     def geom(self, geom):
         self._geom = geom
+
+
+    @geom_type.setter
+    def geom_type(self, geom_type):
+        self._geom_type = geom_type
 
 
     @epsg.setter

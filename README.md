@@ -1,6 +1,6 @@
 # Gazetteer Berlin/Brandenburg
 
-A plug-in to search for addresses and cadastral data in Berlin/Brandenburg.
+A plug-in for [QGIS](https://github.com/qgis/QGIS) to search for addresses and cadastral data in Berlin/Brandenburg.
 
 The results can be viewed on the map as geometry. The plug-in uses official and daily updated data (https://search.geobasis-bb.de/) from the State Office for Land Surveying and Geoinformation Brandenburg (LGB). It is free to use.
 
