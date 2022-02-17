@@ -81,6 +81,8 @@ class GazetteerBB:
         self.geometry = True
         self.fill_color = QColor(52, 84, 152, 50)
         self.border_color = QColor(0, 0, 0)
+        self.fill_color_point = QColor(220, 20, 30, 200)
+        self.border_color_point = QColor(0, 0, 0)
 
 
     # noinspection PyMethodMayBeStatic
@@ -547,10 +549,14 @@ class GazetteerBB:
         border_color = self.dockwidget.borderColorButton.color().name(1)
         properties = {'color': fill_color, 'outline_color': border_color}
 
+        fill_color_point = self.dockwidget.fillColorPointButton.color().name(1)
+        border_color_point = self.dockwidget.borderColorPointButton.color().name(1)
+        properties_point = {'color': fill_color_point, 'outline_color': border_color_point, 'size': '3'}
+
         if geom_type.lower() == 'point':
-            style = QgsMarkerSymbol.createSimple(properties)
+            style = QgsMarkerSymbol.createSimple(properties_point)
         elif geom_type.lower() == 'multipoint':
-            style = QgsMarkerSymbol.createSimple(properties)
+            style = QgsMarkerSymbol.createSimple(properties_point)
         elif geom_type.lower() == 'line':
             style = QgsLineSymbol.createSimple(properties)
         elif geom_type.lower() == 'multiline':
@@ -589,22 +595,22 @@ class GazetteerBB:
         settings = QgsSettings()
 
         url = self.dockwidget.urlEdit.text()
-        settings.setValue("gazetteerBB/url", url)
-
         results = self.dockwidget.resultsBox.value()
-        settings.setValue("gazetteerBB/results",  results)
-
         layer = self.dockwidget.layerBox.isChecked()
-        settings.setValue("gazetteerBB/layer", layer)
-
-        complex = self.dockwidget.complexBox.isChecked()
-        settings.setValue("gazetteerBB/geometry", complex)
-
+        complex_geom = self.dockwidget.complexBox.isChecked()
         fill_color = self.dockwidget.fillColorButton.color()
-        settings.setValue("gazetteerBB/fill_color", fill_color)
-
+        fill_color_point = self.dockwidget.fillColorPointButton.color()
         border_color = self.dockwidget.borderColorButton.color()
+        border_color_point = self.dockwidget.borderColorPointButton.color()
+
+        settings.setValue("gazetteerBB/url", url)
+        settings.setValue("gazetteerBB/results",  results)
+        settings.setValue("gazetteerBB/layer", layer)
+        settings.setValue("gazetteerBB/geometry", complex_geom)
+        settings.setValue("gazetteerBB/fill_color", fill_color)
+        settings.setValue("gazetteerBB/fill_color_point", fill_color_point)
         settings.setValue("gazetteerBB/border_color", border_color)
+        settings.setValue("gazetteerBB/border_color_point", border_color_point)
 
         if self.locale == 'de':
             self.set_settings_label('Die Werte wurden erfolgreich gespeichert! '
@@ -620,28 +626,37 @@ class GazetteerBB:
         settings = QgsSettings()
 
         url = settings.value("gazetteerBB/url")
+        results = settings.value("gazetteerBB/results")
+        layer = settings.value("gazetteerBB/layer")
+        complex_geom = settings.value("gazetteerBB/geometry")
+        fill_color = settings.value("gazetteerBB/fill_color")
+        fill_color_point = settings.value("gazetteerBB/fill_color_point")
+        border_color = settings.value("gazetteerBB/border_color")
+        border_color_point = settings.value("gazetteerBB/border_color_point")
+
         if url is not None:
             self.dockwidget.urlEdit.setText(url)
 
-        results = settings.value("gazetteerBB/results")
         if results is not None:
             self.dockwidget.resultsBox.setValue(int(results))
 
-        layer = settings.value("gazetteerBB/layer")
         if layer is not None:
             self.dockwidget.layerBox.setChecked(bool(layer))
 
-        complex = settings.value("gazetteerBB/geometry")
-        if complex is not None:
-            self.dockwidget.complexBox.setChecked(bool(complex))
+        if complex_geom is not None:
+            self.dockwidget.complexBox.setChecked(bool(complex_geom))
 
-        fill_color = settings.value("gazetteerBB/fill_color")
         if fill_color is not None:
             self.dockwidget.fillColorButton.setColor(fill_color)
 
-        border_color = settings.value("gazetteerBB/border_color")
+        if fill_color_point is not None:
+            self.dockwidget.fillColorPointButton.setColor(fill_color_point)
+
         if border_color is not None:
             self.dockwidget.borderColorButton.setColor(border_color)
+
+        if border_color_point is not None:
+            self.dockwidget.borderColorPointButton.setColor(border_color_point)
 
 
     def load_default_settings(self, start):
@@ -651,10 +666,14 @@ class GazetteerBB:
         self.dockwidget.complexBox.setChecked(self.geometry)
 
         fill_color = self.fill_color
-        self.dockwidget.fillColorButton.setColor(fill_color)
-
+        fill_color_point = self.fill_color_point
         border_color = self.border_color
+        border_color_point = self.border_color_point
+
+        self.dockwidget.fillColorButton.setColor(fill_color)
+        self.dockwidget.fillColorPointButton.setColor(fill_color_point)
         self.dockwidget.borderColorButton.setColor(border_color)
+        self.dockwidget.borderColorPointButton.setColor(border_color_point)
 
         if start is False:
             if self.locale == 'de':
