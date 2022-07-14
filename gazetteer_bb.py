@@ -206,23 +206,23 @@ class GazetteerBB:
         self.dockwidget.addressBox.clicked.connect \
             (lambda: self.update_search(True))
         self.dockwidget.backButton.clicked.connect \
-            (lambda: self.update_search(True, -1))
+            (lambda: self.update_search(False, -1))
         self.dockwidget.cadastreBox.clicked.connect \
             (lambda: self.update_search(True))
         self.dockwidget.confirmButton.clicked.connect \
             (self.confirm_opt_filter)
         self.dockwidget.complexBox.clicked.connect \
-            (lambda: self.update_search(True))
+            (lambda: self.update_search(False))
         self.dockwidget.transportBox.clicked.connect \
             (lambda: self.update_search(True))
         self.dockwidget.nextButton.clicked.connect \
-            (lambda: self.update_search(True, 1))
+            (lambda: self.update_search(False, 1))
         self.dockwidget.resetButton.clicked.connect \
             (lambda: self.load_default_settings(False))
         self.dockwidget.saveButton.clicked.connect \
             (self.store_settings)
         self.dockwidget.searchButton.clicked.connect \
-            (lambda: self.update_search(False))
+            (lambda: self.update_search(True))
         self.dockwidget.resultWidget.itemSelectionChanged.connect \
             (self.add_vlayer)
         self.dockwidget.searchEdit.returnPressed.connect \
@@ -264,7 +264,7 @@ class GazetteerBB:
                 ('Restores the default settings')
 
 
-    def update_search(self, opt_filter, status=0):
+    def update_search(self, update_filter, status=0):
         """Starting point for every search."""
 
         self.dockwidget.resultWidget.clear()
@@ -277,12 +277,12 @@ class GazetteerBB:
         term = self.dockwidget.searchEdit.text()
 
         if term != '':
-            param = self.get_query(term, opt_filter)
+            param = self.get_query(term, update_filter)
             json_response = self.query_search(param)
-            self.on_finish_query(json_response, opt_filter)
+            self.on_finish_query(json_response, update_filter)
 
 
-    def get_query(self, term, opt_filter) -> dict:
+    def get_query(self, term, update_filter) -> dict:
         """Builds and returns querystring depending on user settings."""
 
         start = 0
@@ -297,7 +297,7 @@ class GazetteerBB:
         param = {'query': term, 'complex': complex_geom, 'start': start, \
             'limit': limit, 'filter[category]': categories, 'lang': self.locale}
 
-        if opt_filter:
+        if not update_filter:
             for key in self.filter_widgets:
                 value = ''
                 if self.filter_widgets[key].selectedItems():
@@ -360,13 +360,13 @@ class GazetteerBB:
         return output
 
 
-    def on_finish_query(self, json_response, opt_filter):
+    def on_finish_query(self, json_response, update_filter):
         """Called after sucessful query to manipulate UI."""
 
         data = json.loads(json_response)
 
         if json_response is not None:
-            if opt_filter is False:
+            if update_filter:
                 self.update_opt_filter(data)
 
             self.update_results(data)
@@ -424,7 +424,7 @@ class GazetteerBB:
            confirming the filter.
         """
 
-        self.update_search(True)
+        self.update_search(False)
         self.dockwidget.tabWidget.setCurrentIndex(0)
 
 
