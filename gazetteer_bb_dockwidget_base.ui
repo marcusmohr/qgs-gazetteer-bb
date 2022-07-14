@@ -72,33 +72,6 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="1" colspan="2">
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
-            <property name="spacing">
-             <number>0</number>
-            </property>
-            <item>
-             <widget class="QCheckBox" name="addressBox">
-              <property name="text">
-               <string>Adressen</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="cadastreBox">
-              <property name="text">
-               <string>Kataster</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
           <item row="15" column="2">
            <widget class="QLabel" name="pageLabel">
             <property name="text">
@@ -155,6 +128,8 @@
              <font>
               <family>MS Shell Dlg 2</family>
               <pointsize>10</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
              </font>
             </property>
             <property name="lineWidth">
@@ -201,6 +176,40 @@
              </size>
             </property>
            </spacer>
+          </item>
+          <item row="3" column="1" colspan="3">
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QCheckBox" name="addressBox">
+              <property name="text">
+               <string>Adressen</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="cadastreBox">
+              <property name="text">
+               <string>Kataster</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="transportBox">
+              <property name="text">
+               <string>Haltestellen</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </item>
@@ -433,6 +442,7 @@
            <widget class="QLabel" name="settingsLabel">
             <property name="font">
              <font>
+              <pointsize>8</pointsize>
               <weight>75</weight>
               <bold>true</bold>
              </font>

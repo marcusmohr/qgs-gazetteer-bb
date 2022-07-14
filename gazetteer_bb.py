@@ -213,6 +213,8 @@ class GazetteerBB:
             (self.confirm_opt_filter)
         self.dockwidget.complexBox.clicked.connect \
             (lambda: self.update_search(True))
+        self.dockwidget.transportBox.clicked.connect \
+            (lambda: self.update_search(True))
         self.dockwidget.nextButton.clicked.connect \
             (lambda: self.update_search(True, 1))
         self.dockwidget.resetButton.clicked.connect \
@@ -232,26 +234,30 @@ class GazetteerBB:
     def set_tooltips(self):
         if self.locale == 'de':
             self.dockwidget.addressBox.setToolTip \
-                ('Adressen den Ergebnissen hinzufügen oder entfernen')
+                ('Adressen und Orte durchsuchen')
             self.dockwidget.cadastreBox.setToolTip \
-                ('Katasterdaten den Ergebnissen hinzufügen oder entfernen')
+                ('Katasterdaten durchsuchen')
             self.dockwidget.complexBox.setToolTip \
                 ('Statt einer Bounding Box wird die wahre Geometrie zur Karte hinzugefügt (wenn verfügbar)')
             self.dockwidget.layerBox.setToolTip \
                 ('Beim Klick auf ein Ergebnis wird die Geometrie in der Karte angezeigt und als Layer dem Themenbaum hinzugefügt')
+            self.dockwidget.transportBox.setToolTip \
+                ('Haltestellen durchsuchen')
             self.dockwidget.saveButton.setToolTip \
                 ('Speichert die Einstellungen im Nutzerprofil')
             self.dockwidget.resetButton.setToolTip \
                 ('Stellt die Standardeinstellungen wieder her')
         else:
             self.dockwidget.addressBox.setToolTip \
-                ('Add or remove addresses from the results')
+                ('Search addresses and places')
             self.dockwidget.cadastreBox.setToolTip \
-                ('Add or remove cadastral data from the results')
+                ('Search cadastral data')
             self.dockwidget.complexBox.setToolTip \
                 ('True geometry is added to the map instead of a bounding box (if available)')
             self.dockwidget.layerBox.setToolTip \
                 ('When you click on a result, the geometry is displayed on the map and added to the layer tree')
+            self.dockwidget.transportBox.setToolTip \
+                ('Search transport stops')
             self.dockwidget.saveButton.setToolTip \
                 ('Saves the settings in the user profile')
             self.dockwidget.resetButton.setToolTip \
@@ -283,13 +289,13 @@ class GazetteerBB:
         limit = int(self.dockwidget.resultsBox.text())
 
         complex_geom = self.dockwidget.complexBox.isChecked()
-        category = self.get_category_filter()
+        categories = self.get_categories_filter()
 
         if self.current_page != 1:
             start = (self.current_page - 1) * limit
 
         param = {'query': term, 'complex': complex_geom, 'start': start, \
-            'limit': limit, 'filter[category]': category, 'lang': self.locale}
+            'limit': limit, 'filter[category]': categories, 'lang': self.locale}
 
         if opt_filter:
             for key in self.filter_widgets:
@@ -303,22 +309,30 @@ class GazetteerBB:
         return param
 
 
-    def get_category_filter(self) -> str:
+    def get_categories_filter(self) -> str:
         """Returns category filter of search api which is chosen by user."""
 
-        category = 'gazetteer|kataster'
+        categories = ''
         address = self.dockwidget.addressBox
         cadastre = self.dockwidget.cadastreBox
+        transport = self.dockwidget.transportBox
 
-        if address.isChecked() and cadastre.isChecked() == False:
-            category = 'gazetteer'
-        elif address.isChecked() == False and cadastre.isChecked():
-            category = 'kataster'
-        else:
-            address.setChecked(True)
-            cadastre.setChecked(True)
+        if address.isChecked():
+            categories = categories + '|' + 'gazetteer'
+        
+        if cadastre.isChecked():
+            categories = categories + '|' + 'kataster'
 
-        return category
+        if transport.isChecked():
+            categories = categories + '|' + 'haltestellen'
+
+        if address.isChecked() is False and cadastre.isChecked() is False \
+            and transport.isChecked() is False:
+                categories = 'gazetteer|kataster'
+                address.setChecked(True)
+                cadastre.setChecked(True)
+
+        return categories
 
 
     def query_search(self, param) -> str:
