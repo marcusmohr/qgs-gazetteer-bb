@@ -453,7 +453,7 @@ class GazetteerBB:
             self.dockwidget.resultWidget.setItemWidget(item, resultItemWidget)
 
 
-    def get_type_label(self, data, type):
+    def get_type_label(self, data, type) -> str:
         """This matches the type for each result with the values
            of the stats to determine a user friendly label.
         """
@@ -500,7 +500,7 @@ class GazetteerBB:
            vector layer and add it on the map.
         """
 
-        group_name = 'Gazetteer BB/BE'
+        group_name = 'Gazetteer BE/BB'
         group_layer = self.find_group(group_name)
         if not group_layer:
             QgsProject.instance().layerTreeRoot().addGroup(group_name)
@@ -528,7 +528,7 @@ class GazetteerBB:
         return group_layer
 
 
-    def create_layer(self, geom, geom_type, name):
+    def create_layer(self, geom, geom_type, name) -> QgsVectorLayer:
         """Set UI elements for paging to improve handling
            of results.
         """
@@ -551,7 +551,7 @@ class GazetteerBB:
         return layer
 
 
-    def get_layer_symbol(self, geom_type):
+    def get_layer_symbol(self, geom_type) -> QgsFillSymbol:
         """Different symbols have to be created depending on
            geometry of each result item.
         """
