@@ -19,6 +19,7 @@
 
 import json
 import os.path
+from tokenize import group
 
 from qgis.core import *
 from qgis.PyQt.QtCore import *
@@ -495,9 +496,15 @@ class GazetteerBB:
 
 
     def add_vlayer(self):
-        """Called when user clicks on result item. Create vector 
-           layer and add it on the map.
+        """Called when user clicks on result item. Create
+           vector layer and add it on the map.
         """
+
+        group_name = 'Gazetteer BB/BE'
+        group_layer = self.find_group(group_name)
+        if not group_layer:
+            QgsProject.instance().layerTreeRoot().addGroup(group_name)
+            group_layer = self.find_group(group_name)
 
         items = self.dockwidget.resultWidget.selectedItems()
 
@@ -511,7 +518,14 @@ class GazetteerBB:
             create_layer = self.dockwidget.layerBox.isChecked()
 
             if create_layer:
-                QgsProject.instance().addMapLayers([layer])
+                QgsProject.instance().addMapLayers([layer], False)
+                group_layer.addLayer(layer)
+
+
+    def find_group(self, group_name) -> QgsLayerTreeGroup:
+        group_layer = QgsProject.instance().layerTreeRoot().findGroup(group_name)
+    
+        return group_layer
 
 
     def create_layer(self, geom, geom_type, name):
