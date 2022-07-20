@@ -517,7 +517,7 @@ class GazetteerBB:
         group_name = 'Gazetteer BE/BB'
         group_layer = self.find_group(group_name)
         if not group_layer:
-            QgsProject.instance().layerTreeRoot().addGroup(group_name)
+            QgsProject.instance().layerTreeRoot().insertGroup(0, group_name)
             group_layer = self.find_group(group_name)
 
         items = self.dockwidget.resultWidget.selectedItems()
