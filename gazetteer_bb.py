@@ -84,6 +84,7 @@ class GazetteerBB:
         self.border_color = QColor(0, 0, 0)
         self.fill_color_point = QColor(220, 20, 30, 200)
         self.border_color_point = QColor(0, 0, 0)
+        self.fill_color_line = QColor(185, 50, 230)
 
 
     # noinspection PyMethodMayBeStatic
@@ -213,14 +214,16 @@ class GazetteerBB:
             (self.confirm_opt_filter)
         self.dockwidget.complexBox.clicked.connect \
             (lambda: self.update_search(False))
+        self.dockwidget.saveButton.clicked.connect \
+            (self.store_settings)
+        self.dockwidget.streetBox.clicked.connect \
+            (lambda: self.update_search(True))
         self.dockwidget.transportBox.clicked.connect \
             (lambda: self.update_search(True))
         self.dockwidget.nextButton.clicked.connect \
             (lambda: self.update_search(False, 1))
         self.dockwidget.resetButton.clicked.connect \
             (lambda: self.load_default_settings(False))
-        self.dockwidget.saveButton.clicked.connect \
-            (self.store_settings)
         self.dockwidget.searchButton.clicked.connect \
             (lambda: self.update_search(True))
         self.dockwidget.resultWidget.itemSelectionChanged.connect \
@@ -232,36 +235,32 @@ class GazetteerBB:
 
 
     def set_tooltips(self):
-        if self.locale == 'de':
-            self.dockwidget.addressBox.setToolTip \
-                ('Adressen und Orte durchsuchen')
-            self.dockwidget.cadastreBox.setToolTip \
-                ('Katasterdaten durchsuchen')
-            self.dockwidget.complexBox.setToolTip \
-                ('Statt einer Bounding Box wird die wahre Geometrie zur Karte hinzugefügt (wenn verfügbar)')
-            self.dockwidget.layerBox.setToolTip \
-                ('Beim Klick auf ein Ergebnis wird die Geometrie in der Karte angezeigt und als Layer dem Themenbaum hinzugefügt')
-            self.dockwidget.transportBox.setToolTip \
-                ('Haltestellen durchsuchen')
-            self.dockwidget.saveButton.setToolTip \
-                ('Speichert die Einstellungen im Nutzerprofil')
-            self.dockwidget.resetButton.setToolTip \
-                ('Stellt die Standardeinstellungen wieder her')
-        else:
-            self.dockwidget.addressBox.setToolTip \
-                ('Search addresses and places')
-            self.dockwidget.cadastreBox.setToolTip \
-                ('Search cadastral data')
-            self.dockwidget.complexBox.setToolTip \
-                ('True geometry is added to the map instead of a bounding box (if available)')
-            self.dockwidget.layerBox.setToolTip \
-                ('When you click on a result, the geometry is displayed on the map and added to the layer tree')
-            self.dockwidget.transportBox.setToolTip \
-                ('Search transport stops')
-            self.dockwidget.saveButton.setToolTip \
-                ('Saves the settings in the user profile')
-            self.dockwidget.resetButton.setToolTip \
-                ('Restores the default settings')
+        """Set ttips for ui elements."""
+        tooltips = {
+            'de': {
+                self.dockwidget.addressBox: 'Adressen und Orte durchsuchen',
+                self.dockwidget.cadastreBox: 'Katasterdaten durchsuchen',
+                self.dockwidget.complexBox: 'Statt einer Bounding Box wird die wahre Geometrie zur Karte hinzugefügt (wenn verfügbar)',
+                self.dockwidget.layerBox: 'Beim Klick auf ein Ergebnis wird die Geometrie in der Karte angezeigt und als Layer dem Themenbaum hinzugefügt',
+                self.dockwidget.saveButton: 'Speichert die Einstellungen im Nutzerprofil',
+                self.dockwidget.streetBox: 'Straßendaten durchsuchen',
+                self.dockwidget.transportBox: 'Haltestellen durchsuchen',
+                self.dockwidget.resetButton: 'Stellt die Standardeinstellungen wieder her',
+            },
+            'en': {
+                self.dockwidget.addressBox: 'Search addresses and places',
+                self.dockwidget.cadastreBox: 'Search cadastral data',
+                self.dockwidget.complexBox: 'True geometry is added to the map instead of a bounding box (if available)',
+                self.dockwidget.layerBox: 'When you click on a result, the geometry is displayed on the map and added to the layer tree',
+                self.dockwidget.saveButton: 'Saves the settings in the user profile',
+                self.dockwidget.streetBox: 'Search special street data',
+                self.dockwidget.transportBox: 'Search transport stops',
+                self.dockwidget.resetButton: 'Restores the default settings',
+            }
+        }
+
+        for widget, tooltip_text in tooltips.get(self.locale, {}).items():
+            widget.setToolTip(tooltip_text)
 
 
     def update_search(self, update_filter, status=0):
@@ -298,13 +297,12 @@ class GazetteerBB:
             'limit': limit, 'filter[category]': categories, 'lang': self.locale}
 
         if not update_filter:
-            for key in self.filter_widgets:
-                value = ''
-                if self.filter_widgets[key].selectedItems():
-                    for item in self.filter_widgets[key].selectedItems():
-                        value += str(item.data(QtCore.Qt.UserRole)) + '|'
-                    filter_key = 'filter[' + key + ']'
-                    param[filter_key] = value[:-1]
+            for key, widget in self.filter_widgets.items():
+                selected_items = widget.selectedItems()
+                if selected_items:
+                    values = [str(item.data(QtCore.Qt.UserRole)) for item in selected_items]
+                    filter_key = f'filter[{key}]'
+                    param[filter_key] = '|'.join(values)
 
         return param
 
@@ -312,25 +310,19 @@ class GazetteerBB:
     def get_categories_filter(self) -> str:
         """Returns category filter of search api which is chosen by user."""
 
-        categories = ''
-        address = self.dockwidget.addressBox
-        cadastre = self.dockwidget.cadastreBox
-        transport = self.dockwidget.transportBox
+        checkbox_mapping = {
+            self.dockwidget.addressBox: 'gazetteer',
+            self.dockwidget.cadastreBox: 'kataster',
+            self.dockwidget.transportBox: 'haltestellen',
+            self.dockwidget.streetBox: 'strassendaten'
+        }
 
-        if address.isChecked():
-            categories = categories + '|' + 'gazetteer'
-        
-        if cadastre.isChecked():
-            categories = categories + '|' + 'kataster'
+        categories = '|'.join(category for checkbox, category in checkbox_mapping.items() if checkbox.isChecked())
 
-        if transport.isChecked():
-            categories = categories + '|' + 'haltestellen'
-
-        if address.isChecked() is False and cadastre.isChecked() is False \
-            and transport.isChecked() is False:
-                categories = 'gazetteer|kataster'
-                address.setChecked(True)
-                cadastre.setChecked(True)
+        if not categories:
+            self.dockwidget.addressBox.setChecked(True)
+            self.dockwidget.cadastreBox.setChecked(True)
+            categories = 'gazetteer|kataster'
 
         return categories
 
@@ -565,37 +557,46 @@ class GazetteerBB:
         return layer
 
 
-    def get_layer_symbol(self, geom_type) -> QgsFillSymbol:
+    def get_layer_symbol(self, geom_type) -> QgsSymbol:
         """Different symbols have to be created depending on
-           geometry of each result item.
+        geometry of each result item.
         """
+        symbol = None
+        properties = {
+            'color': self.dockwidget.fillColorButton.color().name(1),
+            'outline_color': self.dockwidget.borderColorButton.color().name(1)
+        }
 
-        style = None
-        fill_color = self.dockwidget.fillColorButton.color().name(1)
-        border_color = self.dockwidget.borderColorButton.color().name(1)
-        properties = {'color': fill_color, 'outline_color': border_color}
+        properties_point = {
+            'color': self.dockwidget.fillColorPointButton.color().name(1),
+            'outline_color': self.dockwidget.borderColorPointButton.color().name(1),
+            'size': '3'
+        }
 
-        fill_color_point = self.dockwidget.fillColorPointButton.color().name(1)
-        border_color_point = self.dockwidget.borderColorPointButton.color().name(1)
-        properties_point = {'color': fill_color_point, 'outline_color': border_color_point, 'size': '3'}
+        properties_line = {
+            'color': self.dockwidget.fillColorLineButton.color().name(1),
+            'width': '2'
+        }
 
-        if geom_type.lower() == 'point':
-            style = QgsMarkerSymbol.createSimple(properties_point)
-        elif geom_type.lower() == 'multipoint':
-            style = QgsMarkerSymbol.createSimple(properties_point)
-        elif geom_type.lower() == 'line':
-            style = QgsLineSymbol.createSimple(properties)
-        elif geom_type.lower() == 'multiline':
-            style = QgsLineSymbol.createSimple(properties)
-        elif geom_type.lower() == 'polygon':
-            style = QgsFillSymbol.createSimple(properties)
-        elif geom_type.lower() == 'multipolygon':
-            style = QgsFillSymbol.createSimple(properties)
-        else:
-            self.log_error('Geometry type <' + geom_type + '> not supported')
+        geom_type = geom_type.lower()
+        symbol_mapping = {
+            'point': QgsMarkerSymbol.createSimple(properties_point),
+            'multipoint': QgsMarkerSymbol.createSimple(properties_point),
+            'line': QgsLineSymbol.createSimple(properties_line),
+            'linestring': QgsLineSymbol.createSimple(properties_line),
+            'multiline': QgsLineSymbol.createSimple(properties_line),
+            'multilinestring': QgsLineSymbol.createSimple(properties_line),
+            'polygon': QgsFillSymbol.createSimple(properties),
+            'multipolygon': QgsFillSymbol.createSimple(properties)
+        }
+
+        symbol = symbol_mapping.get(geom_type)
+
+        if symbol is None:
+            self.log_error(f'Geometry type <{geom_type}> not supported')
             self.openLog()
 
-        return style
+        return symbol
 
 
     def set_map_extent(self, layer, geom_type):
@@ -630,18 +631,20 @@ class GazetteerBB:
         complex_geom = self.dockwidget.complexBox.isChecked()
         fill_color = self.dockwidget.fillColorButton.color()
         fill_color_point = self.dockwidget.fillColorPointButton.color()
+        fill_color_line = self.dockwidget.fillColorLineButton.color()
         border_color = self.dockwidget.borderColorButton.color()
         border_color_point = self.dockwidget.borderColorPointButton.color()
-
+        
         settings.setValue("gazetteerBB/url", url)
         settings.setValue("gazetteerBB/results",  results)
         settings.setValue("gazetteerBB/layer", layer)
         settings.setValue("gazetteerBB/geometry", complex_geom)
         settings.setValue("gazetteerBB/fill_color", fill_color)
         settings.setValue("gazetteerBB/fill_color_point", fill_color_point)
+        settings.setValue("gazetteerBB/fill_color_line", fill_color_line)
         settings.setValue("gazetteerBB/border_color", border_color)
         settings.setValue("gazetteerBB/border_color_point", border_color_point)
-
+        
         if self.locale == 'de':
             self.set_settings_label('Die Werte wurden erfolgreich gespeichert! '
                 + 'Die neuen Einstellungen werden bei der nächsten Suche berücksichtigt.')
@@ -661,6 +664,7 @@ class GazetteerBB:
         complex_geom = settings.value("gazetteerBB/geometry")
         fill_color = settings.value("gazetteerBB/fill_color")
         fill_color_point = settings.value("gazetteerBB/fill_color_point")
+        fill_color_line = settings.value("gazetteerBB/fill_color_line")
         border_color = settings.value("gazetteerBB/border_color")
         border_color_point = settings.value("gazetteerBB/border_color_point")
 
@@ -682,6 +686,9 @@ class GazetteerBB:
         if fill_color_point is not None:
             self.dockwidget.fillColorPointButton.setColor(fill_color_point)
 
+        if fill_color_line is not None:
+            self.dockwidget.fillColorLineButton.setColor(fill_color_line)
+
         if border_color is not None:
             self.dockwidget.borderColorButton.setColor(border_color)
 
@@ -697,11 +704,13 @@ class GazetteerBB:
 
         fill_color = self.fill_color
         fill_color_point = self.fill_color_point
+        fill_color_line = self.fill_color_line
         border_color = self.border_color
         border_color_point = self.border_color_point
 
         self.dockwidget.fillColorButton.setColor(fill_color)
         self.dockwidget.fillColorPointButton.setColor(fill_color_point)
+        self.dockwidget.fillColorLineButton.setColor(fill_color_line)
         self.dockwidget.borderColorButton.setColor(border_color)
         self.dockwidget.borderColorPointButton.setColor(border_color_point)
 

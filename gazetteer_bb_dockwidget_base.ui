@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>418</width>
+    <width>466</width>
     <height>690</height>
    </rect>
   </property>
@@ -209,6 +209,13 @@
               </property>
              </widget>
             </item>
+            <item>
+             <widget class="QCheckBox" name="streetBox">
+              <property name="text">
+               <string>Straßennetz</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </item>
          </layout>
@@ -303,37 +310,16 @@
           <property name="bottomMargin">
            <number>9</number>
           </property>
-          <item row="17" column="0" colspan="2">
-           <widget class="QLineEdit" name="urlEdit">
-            <property name="text">
-             <string>https://search.geobasis-bb.de</string>
+          <item row="22" column="0">
+           <widget class="QSpinBox" name="resultsBox">
+            <property name="minimum">
+             <number>10</number>
             </property>
-           </widget>
-          </item>
-          <item row="11" column="0" colspan="3">
-           <spacer name="horizontalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+            <property name="maximum">
+             <number>50</number>
             </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="15" column="0">
-           <widget class="QLabel" name="searchUrlLabel">
-            <property name="font">
-             <font>
-              <pointsize>9</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>URL</string>
+            <property name="value">
+             <number>20</number>
             </property>
            </widget>
           </item>
@@ -347,10 +333,195 @@
             </property>
            </widget>
           </item>
-          <item row="36" column="0">
+          <item row="36" column="0" colspan="3">
+           <widget class="QLabel" name="settingsLabel">
+            <property name="font">
+             <font>
+              <pointsize>8</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="20" column="0" colspan="3">
+           <spacer name="horizontalSpacer_6">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="21" column="0">
+           <widget class="QLabel" name="sizeLabel">
+            <property name="font">
+             <font>
+              <pointsize>9</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Treffer pro Seite</string>
+            </property>
+           </widget>
+          </item>
+          <item row="37" column="2">
+           <widget class="QPushButton" name="resetButton">
+            <property name="text">
+             <string>Reset</string>
+            </property>
+           </widget>
+          </item>
+          <item row="11" column="0" colspan="3">
+           <layout class="QHBoxLayout" name="horizontalLayout_8"/>
+          </item>
+          <item row="12" column="0" colspan="3">
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="37" column="0">
            <widget class="QPushButton" name="saveButton">
             <property name="text">
              <string>Speichern</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0" colspan="3">
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="16" column="0">
+           <widget class="QLabel" name="searchUrlLabel">
+            <property name="font">
+             <font>
+              <pointsize>9</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>URL</string>
+            </property>
+           </widget>
+          </item>
+          <item row="10" column="0" colspan="3">
+           <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0,0">
+            <item row="1" column="1">
+             <widget class="QgsColorButton" name="fillColorButton">
+              <property name="allowOpacity">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QgsColorButton" name="borderColorPointButton">
+              <property name="allowOpacity">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QgsColorButton" name="borderColorButton">
+              <property name="allowOpacity">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QgsColorButton" name="fillColorPointButton">
+              <property name="allowOpacity">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="borderColorLabel">
+              <property name="text">
+               <string>Rahmenfarbe</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLabel" name="polygonLabel">
+              <property name="text">
+               <string>Polygone</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3" colspan="2">
+             <widget class="QLabel" name="lineLabel">
+              <property name="text">
+               <string>Linien</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QLabel" name="pointLabel">
+              <property name="text">
+               <string>Punkte</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="3" colspan="2">
+             <widget class="QgsColorButton" name="fillColorLineButton">
+              <property name="allowOpacity">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="fillLabel">
+              <property name="text">
+               <string>Füllfarbe</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="18" column="0" colspan="2">
+           <widget class="QLineEdit" name="urlEdit">
+            <property name="text">
+             <string>https://search.geobasis-bb.de</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QCheckBox" name="complexBox">
+            <property name="text">
+             <string>Komplexe Geometrie</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -368,64 +539,7 @@
             </property>
            </widget>
           </item>
-          <item row="4" column="1">
-           <widget class="QCheckBox" name="complexBox">
-            <property name="text">
-             <string>Komplexe Geometrie</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="20" column="0">
-           <widget class="QLabel" name="sizeLabel">
-            <property name="font">
-             <font>
-              <pointsize>9</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Treffer pro Seite</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="0" colspan="3">
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="36" column="2">
-           <widget class="QPushButton" name="resetButton">
-            <property name="text">
-             <string>Reset</string>
-            </property>
-           </widget>
-          </item>
-          <item row="21" column="0">
-           <widget class="QSpinBox" name="resultsBox">
-            <property name="minimum">
-             <number>10</number>
-            </property>
-            <property name="maximum">
-             <number>50</number>
-            </property>
-            <property name="value">
-             <number>20</number>
-            </property>
-           </widget>
-          </item>
-          <item row="34" column="0">
+          <item row="35" column="0">
            <spacer name="verticalSpacer_2">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -434,122 +548,6 @@
              <size>
               <width>20</width>
               <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="35" column="0" colspan="3">
-           <widget class="QLabel" name="settingsLabel">
-            <property name="font">
-             <font>
-              <pointsize>8</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="wordWrap">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="10" column="0" colspan="3">
-           <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0,0">
-            <item row="2" column="2">
-             <widget class="QgsColorButton" name="borderColorPointButton">
-              <property name="allowOpacity">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLabel" name="polygonLabel">
-              <property name="text">
-               <string>Polygone</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QgsColorButton" name="fillColorButton">
-              <property name="allowOpacity">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="2">
-             <widget class="QgsColorButton" name="fillColorPointButton">
-              <property name="allowOpacity">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QLabel" name="pointLabel">
-              <property name="text">
-               <string>Punkte</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QgsColorButton" name="borderColorButton">
-              <property name="allowOpacity">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="3">
-             <spacer name="horizontalSpacer_7">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="1" column="3">
-             <spacer name="horizontalSpacer_4">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="borderColorLabel">
-              <property name="text">
-               <string>Rahmenfarbe</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="fillLabel">
-              <property name="text">
-               <string>Füllfarbe</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="19" column="0" colspan="3">
-           <spacer name="horizontalSpacer_6">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
              </size>
             </property>
            </spacer>
