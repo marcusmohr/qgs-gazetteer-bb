@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/plugins/qgs-gazetteer-bb" >
-        <file>icon.png</file>
-    </qresource>
-</RCC>

@@ -19,17 +19,44 @@
 
 import json
 import os.path
-from tokenize import group
 
-from qgis.core import *
-from qgis.PyQt.QtCore import *
-from qgis.PyQt.QtGui import QIcon, QColor
-from qgis.PyQt.QtWidgets import *
+from qgis.core import (
+    QgsBlockingNetworkRequest,
+    QgsCoordinateReferenceSystem,
+    QgsCoordinateTransform,
+    QgsFeature,
+    QgsFillSymbol,
+    QgsGeometry,
+    QgsLayerTreeGroup,
+    QgsLineSymbol,
+    QgsMarkerSymbol,
+    QgsMessageLog,
+    QgsProject,
+    QgsSettings,
+    QgsSymbol,
+    QgsVectorLayer,
+    Qgis,
+)
+from qgis.PyQt.QtCore import (
+    QCoreApplication,
+    QSettings,
+    Qt,
+    QTimer,
+    QTranslator,
+    QUrl,
+)
+from qgis.PyQt.QtGui import QAction, QColor, QIcon
+from qgis.PyQt.QtWidgets import (
+    QDockWidget,
+    QListWidget,
+    QListWidgetItem,
+    QVBoxLayout,
+    QAbstractItemView,
+)
 from qgis.PyQt.QtNetwork import QNetworkRequest
 from .collapsible_box import CollapsibleBox
 from .gazetteer_bb_dockwidget import GazetteerBBDockWidget
 from .item_data import ItemData
-from .resources import *
 from .result_item_widget import ResultItemWidget
 from urllib.parse import urlencode
 
@@ -135,7 +162,10 @@ class GazetteerBB:
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
-        icon_path = ':/plugins/qgs-gazetteer-bb/icon.png'
+        icon_path = os.path.join(
+            self.plugin_dir,
+            'icon.png'
+        )
         self.add_action(
             icon_path,
             text=self.tr(u'Gazetteer Berlin/Brandenburg'),
@@ -184,7 +214,7 @@ class GazetteerBB:
                 self.connect_ui()
                 self.set_tooltips()
 
-            self.iface.addDockWidget(Qt.RightDockWidgetArea, self.dockwidget)
+            self.iface.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, self.dockwidget)
 
             self.load_default_settings(True)
             self.load_settings()
@@ -300,7 +330,7 @@ class GazetteerBB:
             for key, widget in self.filter_widgets.items():
                 selected_items = widget.selectedItems()
                 if selected_items:
-                    values = [str(item.data(QtCore.Qt.UserRole)) for item in selected_items]
+                    values = [str(item.data(Qt.ItemDataRole.UserRole)) for item in selected_items]
                     filter_key = f'filter[{key}]'
                     param[filter_key] = '|'.join(values)
 
@@ -353,16 +383,23 @@ class GazetteerBB:
 
 
     def on_finish_query(self, json_response, update_filter):
-        """Called after sucessful query to manipulate UI."""
+        """Called after successful query to manipulate UI."""
 
-        data = json.loads(json_response)
+        if not json_response:
+            self.log_error("Empty or invalid response")
+            return
 
-        if json_response is not None:
-            if update_filter:
-                self.update_opt_filter(data)
+        try:
+            data = json.loads(json_response)
+        except json.JSONDecodeError as e:
+            self.log_error(f"Invalid JSON response: {e}")
+            return
 
-            self.update_results(data)
-            self.update_paging(data)
+        if update_filter:
+            self.update_opt_filter(data)
+
+        self.update_results(data)
+        self.update_paging(data)
 
 
     def update_opt_filter(self, data):
@@ -385,7 +422,7 @@ class GazetteerBB:
                 widget_layout = QVBoxLayout()
 
                 widget = QListWidget()
-                widget.setSelectionMode(2)
+                widget.setSelectionMode(QAbstractItemView.SelectionMode.MultiSelection)
 
                 for u in i['vals']:
                     item = QListWidgetItem()
@@ -394,7 +431,7 @@ class GazetteerBB:
                     else:
                         item.setText(u['value'])
 
-                    item.setData(QtCore.Qt.UserRole, u['value'])
+                    item.setData(Qt.ItemDataRole.UserRole, u['value'])
                     widget.addItem(item)
 
                 widget_layout.addWidget(widget)
@@ -452,24 +489,20 @@ class GazetteerBB:
                 combined_header = item_data.type + ' | ' + item_data.subtitle
                 resultItemWidget = ResultItemWidget(item_data.title, combined_header)
 
-            item.setData(QtCore.Qt.UserRole, item_data)
+            item.setData(Qt.ItemDataRole.UserRole, item_data)
             item.setSizeHint(resultItemWidget.sizeHint())
 
             self.dockwidget.resultWidget.addItem(item)
             self.dockwidget.resultWidget.setItemWidget(item, resultItemWidget)
 
 
-    def get_type_label(self, data, type) -> str:
-        """This matches the type for each result with the values
-           of the stats to determine a user friendly label.
-        """
-
+    def get_type_label(self, data, type_value) -> str:
+        type_label = ""
         for i in data['stats']:
             if i['vals'] and i['attribute'] == 'type':
                 for u in i['vals']:
-                    if type == u['value']:
+                    if type_value == u['value']:
                         type_label = u['label']
-
         return type_label
 
 
@@ -497,8 +530,11 @@ class GazetteerBB:
         else:
             self.dockwidget.pageLabel.setText('Page ' + str(self.current_page))
 
-        self.dockwidget.hitsLabel.setText(str(start + 1) + ' - ' + \
-            str(start + limit) + ' / ' + str(hits))
+        end = min(start + limit, hits)
+
+        self.dockwidget.hitsLabel.setText(
+            f"{start + 1} - {end} / {hits}"
+        )
 
 
     def add_vlayer(self):
@@ -515,7 +551,7 @@ class GazetteerBB:
         items = self.dockwidget.resultWidget.selectedItems()
 
         if items:
-            item_data = items[0].data(QtCore.Qt.UserRole)
+            item_data = items[0].data(Qt.ItemDataRole.UserRole)
             layer_name = item_data.title
             layer = self.create_layer(item_data.geom, item_data.geom_type, layer_name)
 
@@ -563,18 +599,18 @@ class GazetteerBB:
         """
         symbol = None
         properties = {
-            'color': self.dockwidget.fillColorButton.color().name(1),
-            'outline_color': self.dockwidget.borderColorButton.color().name(1)
+            'color': self.dockwidget.fillColorButton.color().name(QColor.NameFormat.HexArgb),
+            'outline_color': self.dockwidget.borderColorButton.color().name(QColor.NameFormat.HexArgb)
         }
 
         properties_point = {
-            'color': self.dockwidget.fillColorPointButton.color().name(1),
-            'outline_color': self.dockwidget.borderColorPointButton.color().name(1),
+            'color': self.dockwidget.fillColorPointButton.color().name(QColor.NameFormat.HexArgb),
+            'outline_color': self.dockwidget.borderColorPointButton.color().name(QColor.NameFormat.HexArgb),
             'size': '3'
         }
 
         properties_line = {
-            'color': self.dockwidget.fillColorLineButton.color().name(1),
+            'color': self.dockwidget.fillColorLineButton.color().name(QColor.NameFormat.HexArgb),
             'width': '2'
         }
 

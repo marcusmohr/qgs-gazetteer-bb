@@ -1,20 +1,21 @@
-import sys
-from qgis.PyQt.QtGui import *
-from qgis.PyQt.QtWidgets import *
+from qgis.PyQt.QtWidgets import (
+    QLabel,
+    QVBoxLayout,
+    QWidget,
+)
 
 class ResultItemWidget(QWidget):
     """Custom ListWidgetItem with specific layout."""
 
     def __init__(self, title, subtitle, parent=None):
-        super(ResultItemWidget, self).__init__(parent)
+        super().__init__(parent)
 
         self.title = QLabel(title)
         self.subtitle = QLabel(subtitle)
 
-        self.qv_box_layout = QVBoxLayout()
-        self.qv_box_layout.addWidget(self.title)
-        self.qv_box_layout.addWidget(self.subtitle)
-
-        self.setLayout(self.qv_box_layout)
+        layout = QVBoxLayout()
+        layout.addWidget(self.title)
+        layout.addWidget(self.subtitle)
+        self.setLayout(layout)
 
         self.subtitle.setStyleSheet('color: rgb(150, 150, 150);')
